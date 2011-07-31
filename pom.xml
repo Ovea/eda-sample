@@ -154,7 +154,7 @@
         <dependency>
             <groupId>com.ovea</groupId>
             <artifactId>ovea-virtual-resources</artifactId>
-            <version>1.9.ga-SNAPSHOT</version>
+            <version>1.9.ga</version>
         </dependency>
 
         <!-- Jersey -->
@@ -177,6 +177,12 @@
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
             <version>1.8</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

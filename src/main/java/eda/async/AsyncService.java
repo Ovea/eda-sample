@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda.cometd;
+package eda.async;
 
 import org.cometd.bayeux.server.BayeuxServer;
 import org.cometd.bayeux.server.ConfigurableServerChannel;
@@ -27,7 +27,7 @@ import javax.inject.Inject;
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
 @Service
-public final class AsyncService {
+final class AsyncService {
 
     @Inject
     BayeuxServer server;

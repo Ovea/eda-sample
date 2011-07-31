@@ -13,19 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda.guice;
+package eda.security;
 
-import com.ovea.cometd.guice.GuiceCometdModule;
-import com.ovea.cometd.websocket.jetty8.Jetty8WebSocketTransport;
-import org.cometd.server.BayeuxServerImpl;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-final class CometdModule extends GuiceCometdModule {
+public class MemoryUserRepository implements UserRepository {
+
+    private final Set<String> users = new HashSet<String>();
+
     @Override
-    protected void configure(BayeuxServerImpl server) {
-        server.setOption(BayeuxServerImpl.LOG_LEVEL, BayeuxServerImpl.DEBUG_LOG_LEVEL);
-        server.addTransport(new Jetty8WebSocketTransport(server));
+    public boolean add(String user) {
+        return users.add(user);
+    }
+
+    @Override
+    public boolean exist(String user) {
+        return users.contains(user);
+    }
+
+    @Override
+    public boolean remove(String user) {
+        return users.remove(user);
     }
 }

@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda.guice;
+package eda.web;
 
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.mycila.inject.jsr250.Jsr250;
 import com.mycila.inject.jsr250.Jsr250Injector;
-import eda.util.JdkOverLog4j;
+import com.mycila.inject.service.ServiceModules;
+import eda.support.log4j.JdkOverLog4j;
 
 import javax.servlet.ServletContextEvent;
 
@@ -31,7 +33,7 @@ public final class GuiceConfig extends GuiceServletContextListener {
     @Override
     protected Injector getInjector() {
         JdkOverLog4j.install();
-        return Jsr250.createInjector(Stage.PRODUCTION, new ServiceModule(), new WebModule(), new CometdModule());
+        return Jsr250.createInjector(Stage.PRODUCTION, ServiceModules.loadFromClasspath(Module.class));
     }
 
     @Override

@@ -47,6 +47,10 @@
     <!-- CATEGORIES -->
     <!-- ========== -->
 
+    <category name="com.ovea.resource.web.VirtualResource">
+        <priority value="WARN"/>
+    </category>
+
     <category name="org.eclipse.jetty.util.log">
         <priority value="INFO"/>
     </category>
@@ -55,11 +59,15 @@
         <priority value="TRACE"/>
     </category>
 
+    <category name="com.sun.jersey.server.impl">
+        <priority value="WARN"/>
+    </category>
+
     <!-- ======================= -->
     <!-- Setup the Root category -->
     <!-- ======================= -->
     <root>
-        <priority value="TRACE"/>
+        <priority value="INFO"/>
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="STDERR"/>
     </root>

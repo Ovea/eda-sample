@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda;
+package eda.security;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -23,14 +23,10 @@ import javax.servlet.http.HttpSession;
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-public final class SessionBasedAuthManager implements AuthManager {
-
-    final Provider<HttpServletRequest> req;
+final class SessionBasedAuthManager implements AuthManager {
 
     @Inject
-    public SessionBasedAuthManager(Provider<HttpServletRequest> req) {
-        this.req = req;
-    }
+    Provider<HttpServletRequest> req;
 
     @Override
     public boolean isLogged() {

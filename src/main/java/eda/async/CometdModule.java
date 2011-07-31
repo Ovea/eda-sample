@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda;
+package eda.async;
+
+import com.ovea.cometd.guice.GuiceCometdModule;
+import com.ovea.cometd.websocket.jetty8.Jetty8WebSocketTransport;
+import org.cometd.server.BayeuxServerImpl;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-public interface UserRepository {
-    /**
-     * Check if a user exist
-     */
-    public boolean exist(String user);
-
-    /**
-     * Add a user, returns false if already exist and not added
-     */
-    public boolean add(String user);
-
-    /**
-     * Remove a user and returns true if existed
-     */
-    public boolean remove(String user);
+final class CometdModule extends GuiceCometdModule {
+    @Override
+    protected void configure(BayeuxServerImpl server) {
+        server.setOption(BayeuxServerImpl.LOG_LEVEL, BayeuxServerImpl.DEBUG_LOG_LEVEL);
+        server.addTransport(new Jetty8WebSocketTransport(server));
+    }
 }

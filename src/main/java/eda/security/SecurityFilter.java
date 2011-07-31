@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda.web;
-
-import eda.AuthManager;
+package eda.security;
 
 import javax.inject.Inject;
 import javax.servlet.*;
@@ -32,7 +30,8 @@ public final class SecurityFilter implements Filter {
     private final AuthManager authManager;
     private Pattern[] excludes = new Pattern[]{
         Pattern.compile("/login\\.html"),
-        Pattern.compile("/static/.*")
+        Pattern.compile("/static/.*"),
+        Pattern.compile("/service/security/login")
     };
 
     @Inject
@@ -59,8 +58,10 @@ public final class SecurityFilter implements Filter {
                 return;
             }
         }
-        if (!authManager.isLogged()) {
-            if ("XMLHttpRequest".equalsIgnoreCase(request.getParameter("X-Requested-With"))) {
+        if (authManager.isLogged()) {
+            chain.doFilter(req, res);
+        } else {
+            if ("XMLHttpRequest".equalsIgnoreCase(req.getHeader("X-Requested-With"))) {
                 res.sendError(HttpServletResponse.SC_FORBIDDEN);
             } else {
                 res.sendRedirect("login.html");

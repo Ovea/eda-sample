@@ -17,21 +17,24 @@
 
 -->
 
-<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:j2ee="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_3.0.xsd">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="3.0">
 
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>home.html</welcome-file>
     </welcome-file-list>
-
+    
     <session-config>
-        <session-timeout>2</session-timeout>
+        <session-timeout>1</session-timeout>
     </session-config>
 
     <listener>
-        <listener-class>eda.guice.GuiceConfig</listener-class>
+        <listener-class>eda.web.GuiceConfig</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>eda.security.SecuritySessionListener</listener-class>
     </listener>
 
     <filter>

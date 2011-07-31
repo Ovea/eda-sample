@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda;
+package eda.async;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.google.inject.AbstractModule;
+import com.ovea.cometd.guice.GuiceCometdServlet;
+import org.cometd.server.ext.AcknowledgedMessagesExtension;
+
+import javax.inject.Singleton;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-public final class MemoryUserRepository implements UserRepository {
-
-    private final Set<String> users = new HashSet<String>();
-
+public final class AsyncModule extends AbstractModule {
     @Override
-    public boolean add(String user) {
-        return users.add(user);
-    }
-
-    @Override
-    public boolean exist(String user) {
-        return users.contains(user);
-    }
-
-    @Override
-    public boolean remove(String user) {
-        return users.remove(user);
+    protected void configure() {
+        install(new CometdModule());
+        bind(GuiceCometdServlet.class).in(Singleton.class);
+        bind(AsyncService.class).in(Singleton.class);
+        bind(AcknowledgedMessagesExtension.class).in(Singleton.class);
     }
 }

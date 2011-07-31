@@ -26,6 +26,7 @@
 
     <resource virtual-path="theme/humanity/common.css" gzip="true" caching="2592000">
         <web minimize="true">js/jquery.ui-1.8.14/humanity/jquery-ui-1.8.14.css</web>
+        <web minimize="true">css/app.css</web>
     </resource>
     
     <resource virtual-path="common.js" gzip="true" caching="2592000">
@@ -44,8 +45,17 @@
         <classpath minimize="true">com/ovea/js/eventbus/eventbus.js</classpath>
         <classpath minimize="true">com/ovea/js/eventbus/eventbus.sync.js</classpath>
         <classpath minimize="true">com/ovea/js/eventbus/eventbus.cometd.js</classpath>
-        <!-- app -->
-        <web minimize="true">js/init.js</web>
+        <!-- common backend API -->
+        <web minimize="true">js/app/init.js</web>
+        <web minimize="true">js/app/backend.js</web>
     </resource>
-    
+
+    <resource virtual-path="login.js" gzip="true" caching="2592000">
+        <web minimize="true">js/app/login.js</web>
+    </resource>
+
+    <resource virtual-path="app.js" gzip="true" caching="2592000">
+        <web minimize="true">js/app/app.js</web>
+    </resource>
+
 </resources>

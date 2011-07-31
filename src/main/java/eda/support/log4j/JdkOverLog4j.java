@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda.util;
+package eda.support.log4j;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

@@ -13,33 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda.guice;
+package eda.security;
 
 import com.google.inject.AbstractModule;
-import eda.AuthManager;
-import eda.MemoryUserRepository;
-import eda.SessionBasedAuthManager;
-import eda.UserRepository;
-import eda.cometd.AsyncService;
-import org.cometd.server.ext.AcknowledgedMessagesExtension;
+import com.google.inject.matcher.Matchers;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 
 import javax.inject.Singleton;
+import java.util.logging.Logger;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-final class ServiceModule extends AbstractModule {
+public final class SecurityModule extends AbstractModule {
     @Override
     protected void configure() {
-        // CometD
-        bind(AsyncService.class).in(Singleton.class);
-        bind(AcknowledgedMessagesExtension.class).in(Singleton.class);
-
-        // REST services
-        
-
-        // services
+        bind(SecurityFilter.class).in(Singleton.class);
         bind(AuthManager.class).to(SessionBasedAuthManager.class).in(Singleton.class);
         bind(UserRepository.class).to(MemoryUserRepository.class).in(Singleton.class);
+        bind(AuthResource.class).in(Singleton.class);
+        bindInterceptor(Matchers.subclassesOf(UserRepository.class), Matchers.any(), new MethodInterceptor() {
+            private final Logger logger = Logger.getLogger(UserRepository.class.getName());
+
+            @Override
+            public Object invoke(MethodInvocation invocation) throws Throwable {
+                Object res = invocation.proceed();
+                logger.info(invocation.getMethod().getName() + "(" + invocation.getArguments()[0] + ") => " + res);
+                return res;
+            }
+        });
     }
 }

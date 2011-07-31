@@ -13,27 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda.guice;
+package eda.web;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.servlet.ServletModule;
 import com.ovea.cometd.guice.GuiceCometdServlet;
 import com.ovea.resource.web.WebResourceServlet;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
-import eda.jersey.GzipEncoder;
-import eda.web.SecurityFilter;
+import eda.security.SecurityFilter;
+import eda.support.jersey.GzipEncoder;
 
 import javax.inject.Singleton;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-final class WebModule extends ServletModule {
+public final class WebModule extends ServletModule {
     @Override
     protected void configureServlets() {
         bind(WebResourceServlet.class).in(Singleton.class);
-        bind(SecurityFilter.class).in(Singleton.class);
-        bind(GuiceCometdServlet.class).in(Singleton.class);
 
         filter("/*").through(SecurityFilter.class, ImmutableMap.of("exclude", ""));
 

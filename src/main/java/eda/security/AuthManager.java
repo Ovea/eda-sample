@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda.jersey;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package eda.security;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-@Target({ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface NoGzip {
+public interface AuthManager {
+    public boolean isLogged();
+
+    public String user();
+
+    public void login(String user);
+
+    public void logout();
 }
