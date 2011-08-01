@@ -120,17 +120,22 @@ public final class AsyncService {
         if (session != null) {
             session.deliver(localSession, "/event/server/session/expired", new JSONObject(), null);
         }
+        try {
+            server.getChannel("/event/user/disconnected").publish(localSession, new JSONObject().put("user", httpSession.getAttribute("user")), null);
+        } catch (JSONException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     public void onLogout(HttpSession httpSession) {
-        ServerSession session = findCurrentSession(httpSession);
-        if (session != null) {
-            session.disconnect();
-        }
         try {
             server.getChannel("/event/user/disconnected").publish(localSession, new JSONObject().put("user", authManager.user()), null);
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+        ServerSession session = findCurrentSession(httpSession);
+        if (session != null) {
+            session.disconnect();
         }
     }
 
