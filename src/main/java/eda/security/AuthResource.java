@@ -15,18 +15,25 @@
  */
 package eda.security;
 
+import eda.async.AsyncService;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
 @Path("security")
+@Produces(MediaType.APPLICATION_JSON)
 public final class AuthResource {
 
     @Inject
@@ -35,11 +42,15 @@ public final class AuthResource {
     @Inject
     UserRepository userRepository;
 
+    @Inject
+    AsyncService asyncService;
+
     @POST
     @Path("login")
     public JSONObject login(@FormParam("user") String user) throws JSONException {
-        if (userRepository.add(user)) {
+        if (userRepository.create(user)) {
             authManager.login(user);
+            asyncService.onLogin();
             return new JSONObject().put("user", authManager.user());
         } else {
             return new JSONObject().put("error", "User already exist !");
@@ -48,10 +59,12 @@ public final class AuthResource {
 
     @POST
     @Path("logout")
-    public void logout() throws JSONException {
+    public void logout(@Context HttpServletRequest request) throws JSONException {
         if (authManager.isLogged()) {
+            asyncService.onLogout(request.getSession());
             userRepository.remove(authManager.user());
             authManager.logout();
+
         }
     }
 }

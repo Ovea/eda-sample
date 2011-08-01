@@ -39,7 +39,9 @@ public final class SecurityModule extends AbstractModule {
             @Override
             public Object invoke(MethodInvocation invocation) throws Throwable {
                 Object res = invocation.proceed();
-                logger.info(invocation.getMethod().getName() + "(" + invocation.getArguments()[0] + ") => " + res);
+                if(invocation.getArguments().length == 1) {
+                    logger.info(invocation.getMethod().getName() + "(" + invocation.getArguments()[0] + ") => " + res);
+                }
                 return res;
             }
         });

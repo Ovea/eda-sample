@@ -13,32 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package eda.security;
+package eda.app;
 
-import org.codehaus.jettison.json.JSONObject;
+import com.google.inject.AbstractModule;
 
-import java.util.List;
+import javax.inject.Singleton;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
-public interface UserRepository {
-    /**
-     * Check if a user exist
-     */
-    public boolean exist(String user);
-
-    /**
-     * Add a user, returns false if already exist and not added
-     */
-    public boolean create(String user);
-
-    /**
-     * Remove a user and returns true if existed
-     */
-    public boolean remove(String user);
-
-    public List<JSONObject> users();
-
-    JSONObject get(String user);
+public final class AppModule extends AbstractModule {
+    @Override
+    protected void configure() {
+        bind(UserResource.class).in(Singleton.class);
+    }
 }

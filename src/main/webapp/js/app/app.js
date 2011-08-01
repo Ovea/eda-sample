@@ -1,21 +1,21 @@
 (function() {
 
-    var dlg = $("<div id='sessionExpiredDialog' title='Server'>Session timed out !</div>");
+    function bootstrap() {
+        $.getJSON('/service/users', function(users) {
+            bus.local.topic('/event/users/loaded').publish(users);
+        });
 
-    bus.local.topic('/event/server/session/expired').subscribe(function() {
-        if (dlg.dialog('isOpen') !== true) {
-            dlg.dialog({
-                modal: true,
-                resizable: false,
-                buttons: {
-                    Ok: function() {
-                        window.location = '/login.html';
-                    }
-                }
-            });
-        }
-    });
+        $.getJSON('/service/users/me', function(me) {
+            bus.local.topic('/event/me/loaded').publish(me);
+        });
 
-    bus.remote.start();
+        bus.remote.start();
+    }
+
+    /*bus.remote.topic('/event/server/remote/disconnected').subscribe(function() {
+        bootstrap();
+    });*/
+
+    bootstrap();
 
 })();

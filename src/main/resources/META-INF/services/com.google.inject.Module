@@ -1,3 +1,4 @@
 eda.security.SecurityModule
 eda.async.AsyncModule
 eda.web.WebModule
+eda.app.AppModule

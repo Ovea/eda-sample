@@ -32,6 +32,9 @@
     <resource virtual-path="common.js" gzip="true" caching="2592000">
         <web>js/jquery-1.6/jquery-1.6.min.js</web>
         <web>js/jquery.ui-1.8.14/jquery-ui-1.8.14.min.js</web>
+        <web minimize="true">js/jquery.idle.js</web>
+        <web minimize="true">js/json2.js</web>
+        <web minimize="true">js/jquery.json-2.2.js</web>
         <classpath minimize="true">com/ovea/js/logging/logging.js</classpath>
         <!-- CometD -->
         <web minimize="true">js/cometd-2.3.1/cometd.js</web>
@@ -47,7 +50,6 @@
         <classpath minimize="true">com/ovea/js/eventbus/eventbus.cometd.js</classpath>
         <!-- common backend API -->
         <web minimize="true">js/app/init.js</web>
-        <web minimize="true">js/app/backend.js</web>
     </resource>
 
     <resource virtual-path="login.js" gzip="true" caching="2592000">
@@ -56,6 +58,11 @@
 
     <resource virtual-path="app.js" gzip="true" caching="2592000">
         <web minimize="true">js/app/app.js</web>
+        <web minimize="true">js/app/app.console.js</web>
+        <web minimize="true">js/app/app.idle.js</web>
+        <web minimize="true">js/app/app.session.js</web>
+        <web minimize="true">js/app/app.users.js</web>
+        <web minimize="true">js/app/app.misc.js</web>
     </resource>
 
 </resources>

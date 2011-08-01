@@ -27,7 +27,7 @@ $(function() {
 $(document).ajaxError(function(e, xhr) {
     switch (xhr.status) {
         case 403:
-            bus.local.topic('/event/server/session/expired').publish();
+            bus.local.topic('/event/request/refused').publish();
             break;
     }
 });

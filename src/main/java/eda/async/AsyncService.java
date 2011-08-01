@@ -15,59 +15,131 @@
  */
 package eda.async;
 
-import org.cometd.bayeux.server.BayeuxServer;
-import org.cometd.bayeux.server.ConfigurableServerChannel;
+import eda.security.AuthManager;
+import eda.security.UserRepository;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.cometd.bayeux.ChannelId;
+import org.cometd.bayeux.server.*;
 import org.cometd.java.annotation.Configure;
+import org.cometd.java.annotation.Listener;
 import org.cometd.java.annotation.Service;
+import org.cometd.java.annotation.Session;
 import org.cometd.server.authorizer.GrantAuthorizer;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
  */
 @Service
-final class AsyncService {
+public final class AsyncService {
 
     @Inject
     BayeuxServer server;
+
+    @Inject
+    UserRepository userRepository;
+
+    @Session
+    LocalSession localSession;
+
+    @Inject
+    AuthManager authManager;
+
+    private final Authorizer loggedUserRequired = new Authorizer() {
+        @Override
+        public Result authorize(Operation operation, ChannelId channel, ServerSession session, ServerMessage message) {
+            try {
+                return server.getContext().getHttpSessionAttribute("user") == null ? Result.deny("User not logged !") : Result.grant();
+            } catch (IllegalStateException e) {
+                session.disconnect();
+                return Result.deny("User not logged !");
+            }
+        }
+    };
+
+    @PostConstruct
+    void init() {
+        server.addListener(new BayeuxServer.SessionListener() {
+            @Override
+            public void sessionAdded(ServerSession session) {
+                server.getContext().setHttpSessionAttribute("cometd", session.getId());
+            }
+
+            @Override
+            public void sessionRemoved(ServerSession session, boolean timedout) {
+            }
+        });
+    }
 
     @Configure("/**")
     void any(ConfigurableServerChannel channel) {
         channel.addAuthorizer(GrantAuthorizer.GRANT_NONE);
     }
 
-    
-    /*@PostConstruct
-    void init() {
-        server.addListener(new BayeuxServer.SessionListener() {
-            @Override
-            public void sessionAdded(ServerSession session) {
-                session.setAttribute("user", server.getContext().getHttpSessionAttribute("user"));
-                server.getChannel("/chatroom").publish(session, "connected !", null);
-            }
-
-            @Override
-            public void sessionRemoved(ServerSession session, boolean timedout) {
-                server.getChannel("/chatroom").publish(session, "disconnected !", null);
-                session.removeAttribute("user");
-            }
-        });
+    @Configure("/event/user/status/changed")
+    void user_connected(ConfigurableServerChannel channel) {
+        channel.setPersistent(true);
+        channel.addAuthorizer(loggedUserRequired);
     }
 
-    @Configure("/chatroom")
-    void configure(ConfigurableServerChannel channel) {
+    @Configure({"/event/server/session/expired", "/event/user/connected", "/event/user/disconnected"})
+    void session_expired(ConfigurableServerChannel channel) {
+        channel.setPersistent(true);
         channel.addAuthorizer(new Authorizer() {
             @Override
             public Result authorize(Operation operation, ChannelId channel, ServerSession session, ServerMessage message) {
-                return session.getAttribute("user") != null ? Result.grant() : Result.deny("no user in session");
+                switch (operation) {
+                    case PUBLISH:
+                        return session.getLocalSession() == localSession ? Result.grant() : Result.deny("");
+                }
+                return loggedUserRequired.authorize(operation, channel, session, message);
             }
         });
     }
 
-    @Listener("/chatroom")
-    void appendUser(ServerSession remote, ServerMessage.Mutable message) {
-        message.setData("[" + remote.getAttribute("user") + "] " + message.getData());
-    }*/
+    @Listener("/event/user/status/changed")
+    void status_changed(ServerSession remote, ServerMessage.Mutable message) {
+        try {
+            message.setData(new JSONObject()
+                .put("user", server.getContext().getHttpSessionAttribute("user"))
+                .put("status", new JSONObject((String) message.getData()).getString("status")));
+        } catch (JSONException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
 
+    public void onExpired(HttpSession httpSession) {
+        ServerSession session = findCurrentSession(httpSession);
+        if (session != null) {
+            session.deliver(localSession, "/event/server/session/expired", new JSONObject(), null);
+        }
+    }
+
+    public void onLogout(HttpSession httpSession) {
+        ServerSession session = findCurrentSession(httpSession);
+        if (session != null) {
+            session.disconnect();
+        }
+        try {
+            server.getChannel("/event/user/disconnected").publish(localSession, new JSONObject().put("user", authManager.user()), null);
+        } catch (JSONException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public void onLogin() {
+        server.getChannel("/event/user/connected").publish(localSession, userRepository.get(authManager.user()), null);
+    }
+
+    private ServerSession findCurrentSession(HttpSession httpSession) {
+        String session = (String) httpSession.getAttribute("cometd");
+        if (session != null) {
+            return server.getSession(session);
+        }
+        return null;
+    }
 }

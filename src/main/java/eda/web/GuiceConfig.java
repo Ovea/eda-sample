@@ -15,16 +15,13 @@
  */
 package eda.web;
 
+import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
-import com.mycila.inject.jsr250.Jsr250;
-import com.mycila.inject.jsr250.Jsr250Injector;
 import com.mycila.inject.service.ServiceModules;
 import eda.support.log4j.JdkOverLog4j;
-
-import javax.servlet.ServletContextEvent;
 
 /**
  * @author Mathieu Carbou (mathieu.carbou@gmail.com)
@@ -33,12 +30,6 @@ public final class GuiceConfig extends GuiceServletContextListener {
     @Override
     protected Injector getInjector() {
         JdkOverLog4j.install();
-        return Jsr250.createInjector(Stage.PRODUCTION, ServiceModules.loadFromClasspath(Module.class));
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        Jsr250Injector injector = (Jsr250Injector) servletContextEvent.getServletContext().getAttribute(Injector.class.getName());
-        injector.destroy();
+        return Guice.createInjector(Stage.PRODUCTION, ServiceModules.loadFromClasspath(Module.class));
     }
 }
