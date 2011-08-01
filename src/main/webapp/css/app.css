@@ -31,3 +31,31 @@
 #console legend {
     font-weight: bold;
 }
+
+#chatroom {
+    overflow: hidden;
+}
+
+#chatroom .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+#chatroom ul {
+    margin: 0;
+    padding: 0;
+}
+
+#chatroom .footer input {
+    width: 75%;
+}
+
+#chatroom .wrapper {
+    height: 90%;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    font-family: monospace;
+}

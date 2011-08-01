@@ -63,6 +63,7 @@
         <web minimize="true">js/app/app.session.js</web>
         <web minimize="true">js/app/app.users.js</web>
         <web minimize="true">js/app/app.misc.js</web>
+        <web minimize="true">js/app/app.chatroom.js</web>
     </resource>
 
 </resources>

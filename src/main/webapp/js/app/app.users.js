@@ -1,7 +1,5 @@
 (function() {
 
-    var me;
-
     function row(user) {
         var li = $('<li>' + user.name + '</li>');
         li.data('user', user);
@@ -10,7 +8,7 @@
     }
 
     bus.local.sync(['/event/users/loaded', '/event/me/loaded', '/event/dom/loaded'], function(call1, call2) {
-        me = call2.arg[0];
+        window.me = call2.arg[0];
         var users = call1.arg[0];
         var ul = $('#users ul');
         ul.empty();

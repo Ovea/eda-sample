@@ -80,14 +80,14 @@ public final class AsyncService {
         channel.addAuthorizer(GrantAuthorizer.GRANT_NONE);
     }
 
-    @Configure("/event/user/status/changed")
-    void user_connected(ConfigurableServerChannel channel) {
+    @Configure({"/event/user/status/changed", "/event/chatroom/message"})
+    void statuc(ConfigurableServerChannel channel) {
         channel.setPersistent(true);
         channel.addAuthorizer(loggedUserRequired);
     }
 
     @Configure({"/event/server/session/expired", "/event/user/connected", "/event/user/disconnected"})
-    void session_expired(ConfigurableServerChannel channel) {
+    void server_events(ConfigurableServerChannel channel) {
         channel.setPersistent(true);
         channel.addAuthorizer(new Authorizer() {
             @Override
@@ -110,6 +110,20 @@ public final class AsyncService {
             message.setData(new JSONObject()
                 .put("user", user)
                 .put("status", status));
+        } catch (JSONException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    @Listener("/event/chatroom/message")
+    void chatroom(ServerSession remote, ServerMessage.Mutable message) {
+        try {
+            String user = (String) server.getContext().getHttpSessionAttribute("user");
+            String msg = new JSONObject((String) message.getData()).getString("msg");
+            message.setData(new JSONObject()
+                .put("user", user)
+                .put("at", System.currentTimeMillis())
+                .put("msg", msg));
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
