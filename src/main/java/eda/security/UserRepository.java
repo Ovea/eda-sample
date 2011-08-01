@@ -41,4 +41,6 @@ public interface UserRepository {
     public List<JSONObject> users();
 
     JSONObject get(String user);
+
+    void setStatus(String user, String status);
 }

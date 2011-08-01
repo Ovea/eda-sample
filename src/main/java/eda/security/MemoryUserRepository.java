@@ -76,4 +76,16 @@ public class MemoryUserRepository implements UserRepository {
         return o;
     }
 
+    @Override
+    public void setStatus(String user, String status) {
+        JSONObject o = users.get(user);
+        if(o != null) {
+            try {
+                o.put("status", status);
+            } catch (JSONException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
+        }
+    }
+
 }

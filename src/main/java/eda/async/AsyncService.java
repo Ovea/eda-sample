@@ -104,9 +104,12 @@ public final class AsyncService {
     @Listener("/event/user/status/changed")
     void status_changed(ServerSession remote, ServerMessage.Mutable message) {
         try {
+            String user = (String) server.getContext().getHttpSessionAttribute("user");
+            String status = new JSONObject((String) message.getData()).getString("status");
+            userRepository.setStatus(user, status);
             message.setData(new JSONObject()
-                .put("user", server.getContext().getHttpSessionAttribute("user"))
-                .put("status", new JSONObject((String) message.getData()).getString("status")));
+                .put("user", user)
+                .put("status", status));
         } catch (JSONException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
