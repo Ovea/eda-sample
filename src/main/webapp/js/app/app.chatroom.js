@@ -1,5 +1,11 @@
 (function() {
 
+    var me;
+
+    bus.local.topic('/event/users/loaded').subscribe(function(user) {
+       me = user;
+    });
+
     bus.local.topic('/event/dom/loaded').subscribe(function() {
 
         function publish() {
@@ -35,6 +41,22 @@
             li.find('span').addClass('me');
         }
         $('.wrapper').get(0).scrollTop = $('.wrapper').height();
+    });
+
+    bus.remote.topic('/event/user/connected').subscribe(function(user) {
+        var li = $('<li>' + new Date().toLocaleTimeString() + ' - <span>' + user.name + '</span> connected !</li>');
+        if (user.name == me.name) {
+            li.find('span').addClass('me');
+        }
+        $('.wrapper ul').append(li);
+    });
+
+    bus.remote.topic('/event/user/disconnected').subscribe(function(evt) {
+        var li = $('<li>' + new Date().toLocaleTimeString() + ' - <span>' + evt.user + '</span> disconnected !</li>');
+        if (evt.user == me.name) {
+            li.find('span').addClass('me');
+        }
+        $('.wrapper ul').append(li);
     });
 
 })();
