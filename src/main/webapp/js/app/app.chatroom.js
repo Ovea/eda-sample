@@ -2,7 +2,7 @@
 
     var me;
 
-    bus.local.topic('/event/users/loaded').subscribe(function(user) {
+    bus.local.topic('/event/me/loaded').subscribe(function(user) {
        me = user;
     });
 
